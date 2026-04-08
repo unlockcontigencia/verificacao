@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verificação</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    }
+
+    .status-text {
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: #4caf50;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .captcha-box {
+      border: 1px solid #d3d3d3;
+      border-radius: 4px;
+      background: #f9f9f9;
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 300px;
+    }
+
+    .check-area {
+      width: 28px; height: 28px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+
+    .box {
+      width: 24px; height: 24px;
+      border: 2px solid #c0c0c0;
+      border-radius: 3px;
+      background: white;
+      transition: border-color 0.2s;
+    }
+    .check-area:hover .box { border-color: #4a90d9; }
+
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2.5px solid #e0e0e0;
+      border-top-color: #4a90d9;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .big-check { display: none; }
+    .big-check svg { width: 28px; height: 28px; }
+
+    .checkbox-label {
+      font-size: 14px;
+      color: #333;
+      user-select: none;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .rc-badge {
+      margin-left: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .rc-badge svg { width: 34px; height: 34px; }
+    .rc-badge .rc-name {
+      font-size: 8px;
+      color: #555;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+    }
+    .rc-badge .rc-terms {
+      font-size: 7px;
+      color: #999;
+    }
+
+    .proceed-btn {
+      margin-top: 16px;
+      display: none;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 11px 28px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: background 0.15s, transform 0.1s;
+      text-decoration: none;
+    }
+    .proceed-btn:hover { background: #1558b0; }
+    .proceed-btn:active { transform: scale(0.98); }
+  </style>
+</head>
+<body>
+
+  <div class="status-text" id="statusText">
+    <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+      <path d="M4 10l4 4 8-8" stroke="#4caf50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Verificado com sucesso
+  </div>
+
+  <div class="captcha-box" id="captchaBox">
+    <div class="check-area" id="checkArea" onclick="startVerify()">
+      <div class="box" id="boxEl"></div>
+      <div class="spinner" id="spinnerEl"></div>
+      <div class="big-check" id="bigCheckEl">
+        <svg viewBox="0 0 28 28" fill="none">
+          <path d="M5 14l6 6L23 8" stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <span class="checkbox-label" id="captchaLabel" onclick="startVerify()">Não sou um robô</span>
+
+    <div class="rc-badge">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 10 A22 22 0 1 1 12 42" stroke="#4A90D9" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <polygon points="10,34 4,46 22,44" fill="#4A90D9"/>
+      </svg>
+      <span class="rc-name">reCAPTCHA</span>
+      <span class="rc-terms">Privacidade · Termos</span>
+    </div>
+  </div>
+
+  <!-- ✏️ COLOQUE O LINK DO SEU GRUPO AQUI ↓ -->
+  <a class="proceed-btn" id="proceedBtn" href="https://SEU-LINK-AQUI.com" target="_blank">
+    Clique aqui para prosseguir
+  </a>
+
+  <script>
+    let verified = false;
+
+    function startVerify() {
+      if (verified) return;
+
+      const box      = document.getElementById('boxEl');
+      const spinner  = document.getElementById('spinnerEl');
+      const bigCheck = document.getElementById('bigCheckEl');
+      const area     = document.getElementById('checkArea');
+      const label    = document.getElementById('captchaLabel');
+      const status   = document.getElementById('statusText');
+      const btn      = document.getElementById('proceedBtn');
+
+      area.onclick  = null;
+      label.onclick = null;
+      area.style.cursor  = 'default';
+      label.style.cursor = 'default';
+
+      box.style.display = 'none';
+      spinner.style.display = 'block';
+
+      setTimeout(() => {
+        spinner.style.display = 'none';
+        bigCheck.style.display = 'flex';
+
+        status.style.display = 'flex';
+        btn.style.display    = 'inline-block';
+        verified = true;
+      }, 1400);
+    }
+  </script>
+
+</body>
+</html>
